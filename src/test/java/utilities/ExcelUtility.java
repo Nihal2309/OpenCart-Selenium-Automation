@@ -23,15 +23,15 @@ public class ExcelUtility {
 	public XSSFSheet sheet;
 	public XSSFRow row;
 	public XSSFCell cell;
-	public CellStyle style;   
+	public CellStyle style;
 	String path;
-	
+
 	public ExcelUtility(String path)
 	{
 		this.path=path;
 	}
-		
-	public int getRowCount(String sheetName) throws IOException 
+
+	public int getRowCount(String sheetName) throws IOException
 	{
 		fi=new FileInputStream(path);
 		workbook=new XSSFWorkbook(fi);
@@ -39,9 +39,9 @@ public class ExcelUtility {
 		int rowcount=sheet.getLastRowNum();
 		workbook.close();
 		fi.close();
-		return rowcount;		
+		return rowcount;
 	}
-	
+
 	public int getCellCount(String sheetName,int rownum) throws IOException
 	{
 		fi=new FileInputStream(path);
@@ -53,8 +53,8 @@ public class ExcelUtility {
 		fi.close();
 		return cellcount;
 	}
-	
-	
+
+
 	public String getCellData(String sheetName,int rownum,int colnum) throws IOException
 	{
 		fi=new FileInputStream(path);
@@ -62,11 +62,11 @@ public class ExcelUtility {
 		sheet=workbook.getSheet(sheetName);
 		row=sheet.getRow(rownum);
 		cell=row.getCell(colnum);
-		
+
 		DataFormatter formatter = new DataFormatter();
 		String data;
 		try{
-		data = formatter.formatCellValue(cell); //Returns the formatted value of a cell as a String regardless of the cell type.
+			data = formatter.formatCellValue(cell); //Returns the formatted value of a cell as a String regardless of the cell type.
 		}
 		catch(Exception e)
 		{
@@ -76,60 +76,60 @@ public class ExcelUtility {
 		fi.close();
 		return data;
 	}
-	
+
 	public void setCellData(String sheetName,int rownum,int colnum,String data) throws IOException
 	{
 		File xlfile=new File(path);
-		if(!xlfile.exists())    // If file not exists then create new file
+		if(!xlfile.exists())    // If file does not exists then create new file
 		{
-		workbook=new XSSFWorkbook();
-		fo=new FileOutputStream(path);
-		workbook.write(fo);
+			workbook=new XSSFWorkbook();
+			fo=new FileOutputStream(path);
+			workbook.write(fo);
 		}
-				
+
 		fi=new FileInputStream(path);
 		workbook=new XSSFWorkbook(fi);
-			
-		if(workbook.getSheetIndex(sheetName)==-1) // If sheet not exists then create new Sheet
+
+		if(workbook.getSheetIndex(sheetName)==-1) // If file does not exists then create new file
 			workbook.createSheet(sheetName);
 		sheet=workbook.getSheet(sheetName);
-					
+
 		if(sheet.getRow(rownum)==null)   // If row not exists then create new Row
-				sheet.createRow(rownum);
+			sheet.createRow(rownum);
 		row=sheet.getRow(rownum);
-		
+
 		cell=row.createCell(colnum);
 		cell.setCellValue(data);
 		fo=new FileOutputStream(path);
-		workbook.write(fo);		
+		workbook.write(fo);
 		workbook.close();
 		fi.close();
 		fo.close();
 	}
-	
-	
+
+
 	public void fillGreenColor(String sheetName,int rownum,int colnum) throws IOException
 	{
 		fi=new FileInputStream(path);
 		workbook=new XSSFWorkbook(fi);
 		sheet=workbook.getSheet(sheetName);
-		
+
 		row=sheet.getRow(rownum);
 		cell=row.getCell(colnum);
-		
+
 		style=workbook.createCellStyle();
-		
+
 		style.setFillForegroundColor(IndexedColors.GREEN.getIndex());
-		style.setFillPattern(FillPatternType.SOLID_FOREGROUND); 
-				
+		style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
 		cell.setCellStyle(style);
 		workbook.write(fo);
 		workbook.close();
 		fi.close();
 		fo.close();
 	}
-	
-	
+
+
 	public void fillRedColor(String sheetName,int rownum,int colnum) throws IOException
 	{
 		fi=new FileInputStream(path);
@@ -137,19 +137,19 @@ public class ExcelUtility {
 		sheet=workbook.getSheet(sheetName);
 		row=sheet.getRow(rownum);
 		cell=row.getCell(colnum);
-		
+
 		style=workbook.createCellStyle();
-		
+
 		style.setFillForegroundColor(IndexedColors.RED.getIndex());
-		style.setFillPattern(FillPatternType.SOLID_FOREGROUND);  
-		
-		cell.setCellStyle(style);		
+		style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
+		cell.setCellStyle(style);
 		workbook.write(fo);
 		workbook.close();
 		fi.close();
 		fo.close();
 	}
-	
+
 }
 
 
