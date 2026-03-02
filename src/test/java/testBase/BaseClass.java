@@ -4,11 +4,14 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.OutputType;
+import org.openqa.selenium.Platform;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.safari.SafariDriver;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -18,6 +21,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.Date;
@@ -38,15 +42,58 @@ public class BaseClass {
 
         logger= LogManager.getLogger(this.getClass());
 
-        switch(br.toLowerCase()){
-            case "chrome" : driver=new ChromeDriver(); break;
-            case "edge" : driver=new EdgeDriver(); break;
-            case "safari" : driver=new SafariDriver(); break;
-            case "firefox" : driver=new FirefoxDriver(); break;
-            default:
-                System.out.println("enter valid browser"); return;
+        if(p.getProperty("execution_env").equalsIgnoreCase("remote")){
+
+            DesiredCapabilities capabilities=new DesiredCapabilities();
+
+            /*
+            capabilities.setPlatform(Platform.MAC); //or capabilities.setPlatform(Platform.WIN11);
+            capabilities.setBrowserName("chrome");
+            */
+
+            //Using OS and Browser as per XML file
+            //OS
+            if(os.equalsIgnoreCase("MAC")){
+                capabilities.setPlatform(Platform.MAC);
+            } else if (os.equalsIgnoreCase("windows")) {
+                capabilities.setPlatform(Platform.WIN11);
+            }else {
+                System.out.println("invalid OS");
+                return;
+            }
+
+            //Browser
+            switch (br.toLowerCase()){
+                case "chrome": capabilities.setBrowserName("chrome"); break;
+                case "edge" : capabilities.setBrowserName("MicrosoftEdge"); break;
+                case "safari" : capabilities.setBrowserName("Safari"); break;
+                default:
+                    System.out.println("No matching browser"); return;
+            }
+
+            driver=new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), capabilities);
+
         }
 
+        if(p.getProperty("execution_env").equalsIgnoreCase("local")) {
+            switch (br.toLowerCase()) {
+                case "chrome":
+                    driver = new ChromeDriver();
+                    break;
+                case "edge":
+                    driver = new EdgeDriver();
+                    break;
+                case "safari":
+                    driver = new SafariDriver();
+                    break;
+                case "firefox":
+                    driver = new FirefoxDriver();
+                    break;
+                default:
+                    System.out.println("enter valid browser");
+                    return;
+            }
+        }
 
 
         driver.manage().deleteAllCookies();
